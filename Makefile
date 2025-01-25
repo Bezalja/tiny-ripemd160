@@ -8,7 +8,7 @@ tests: tests.o ripemd160.o
 check: tests
 	./tests
 
-check-size:
+check-size: ripemd160.o
 	readelf -s ripemd160.o | grep GLOBAL | awk '{SUM+=$$3}END{print SUM}'
 
 .PHONY: clean
