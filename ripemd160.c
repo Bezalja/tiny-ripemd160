@@ -91,12 +91,8 @@ void ripemd160_compute_line(uint32_t* digest, uint32_t* words, uint32_t* chunk, 
             break;
         }
 
-        uint8_t index_tmp[16];
         for (uint8_t i = 0; i < 16; i++) {
-            index_tmp[i] = ripemd160_rho[index[i]];
-        }
-        for (uint8_t i = 0; i < 16; i++) {
-            index[i] = index_tmp[i];
+            index[i] = ripemd160_rho[index[i]];
         }
     }
 }
