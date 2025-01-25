@@ -57,7 +57,7 @@ void ripemd160_compute_line(uint32_t* digest, uint32_t* words, uint32_t* chunk, 
         words[i] = digest[i];
     }
 
-    for (uint8_t round = 0; /* breaks out mid-loop */; round++) {
+    for (uint8_t round = 0; round <= 4; round++) {
         uint32_t k  = ks[round];
         uint8_t  fn = fns[round];
         for (uint8_t i = 0; i < 16; i++) {
@@ -86,9 +86,6 @@ void ripemd160_compute_line(uint32_t* digest, uint32_t* words, uint32_t* chunk, 
             words[3] = ROL(words[2], 10);
             words[2] = words[1];
             words[1] = tmp;
-        }
-        if (round == 4) {
-            break;
         }
 
         for (uint8_t i = 0; i < 16; i++) {
