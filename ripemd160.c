@@ -52,7 +52,7 @@ uint8_t ripemd160_fns_right[5] = { 5, 4, 3, 2, 1 };
 
 #define ROL(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
 
-void ripemd160_compute_line(uint32_t* digest, uint32_t* words, uint32_t* chunk, uint8_t* index, uint8_t* shifts, uint32_t* ks, uint8_t* fns) {
+void ripemd160_compute_line(uint32_t* digest, uint32_t* words, uint32_t* chunk, uint8_t* index, uint32_t* ks, uint8_t* fns) {
     for (uint8_t i = 0; i < 5; i++) {
         words[i] = digest[i];
     }
@@ -80,7 +80,7 @@ void ripemd160_compute_line(uint32_t* digest, uint32_t* words, uint32_t* chunk, 
                     break;
             }
             tmp += words[0] + chunk[index[i]] + k;
-            tmp = ROL(tmp, shifts[index[i]]) + words[4];
+            tmp = ROL(tmp, ripemd160_shifts[round * 16 +  index[i]]) + words[4];
             words[0] = words[4];
             words[4] = words[3];
             words[3] = ROL(words[2], 10);
@@ -90,7 +90,6 @@ void ripemd160_compute_line(uint32_t* digest, uint32_t* words, uint32_t* chunk, 
         if (round == 4) {
             break;
         }
-        shifts += 16;
 
         uint8_t index_tmp[16];
         for (uint8_t i = 0; i < 16; i++) {
@@ -111,7 +110,7 @@ void ripemd160_update_digest(uint32_t* digest, uint32_t* chunk)
         index[i] = i;
     }
     uint32_t words_left[5];
-    ripemd160_compute_line(digest, words_left, chunk, index, ripemd160_shifts, ripemd160_constants_left, ripemd160_fns_left);
+    ripemd160_compute_line(digest, words_left, chunk, index, ripemd160_constants_left, ripemd160_fns_left);
 
     /* initial permutation for right line is 5+9i (mod 16) */
     index[0] = 5;
@@ -119,7 +118,7 @@ void ripemd160_update_digest(uint32_t* digest, uint32_t* chunk)
         index[i] = (index[i-1] + 9) & 0x0f;
     }
     uint32_t words_right[5];
-    ripemd160_compute_line(digest, words_right, chunk, index, ripemd160_shifts, ripemd160_constants_right, ripemd160_fns_right);
+    ripemd160_compute_line(digest, words_right, chunk, index, ripemd160_constants_right, ripemd160_fns_right);
 
     /* update digest */
     digest[0] += words_left[1] + words_right[2];
